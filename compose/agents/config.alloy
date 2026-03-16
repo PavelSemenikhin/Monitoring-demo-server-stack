@@ -1,0 +1,33 @@
+# Рівень логів агента
+logging {
+  level = "info"
+}
+
+# Відправка логів у Loki
+loki.write "loki" {
+  endpoint {
+    # Endpoint Loki на monitoring сервері
+    # Тут потрібно вказати IP або DNS monitoring-сервера,на якому працює Loki.
+    url = "http://monitoring-server:3100/loki/api/v1/push"
+  }
+}
+
+# Логи докер контейнерів
+loki.source.docker "docker_logs" {
+  # Підключення до Docker daemon через socket
+  host = "unix:///var/run/docker.sock"
+
+  # Список контейнерів береться з discovery.docker
+  targets = discovery.docker.containers.targets
+}
+
+# Механізм автоматичного знаходження Docker контейнерів
+# Alloy буде динамічно знаходити всі контейнери
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+# Блок обробки логів
+loki.process "docker_logs" {
+  forward_to = [loki.write.loki.receiver]
+}
