@@ -1,0 +1,33 @@
+---
+- name: Deploy ansible agents
+  hosts: monitored_servers
+  become: true
+
+  vars:
+    agent_dir: /opt/monitoring-agent
+
+  tasks:
+
+    - name: Ensure agent directory exists
+      ansible.builtin.file:
+        path: "{{ agent_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Copy agent docker compose
+      ansible.builtin.copy:
+        src: ../../compose/agents/docker-compose.yml
+        dest: "{{ agent_dir }}/docker-compose.yml"
+
+    - name: Copy alloy config
+      ansible.builtin.copy:
+        src: ../../compose/agents/config.alloy
+        dest: "{{ agent_dir }}/config.alloy"
+
+    - name: Start agent stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ agent_dir }}"
+        state: present
+      when: not ansible_check_mode
