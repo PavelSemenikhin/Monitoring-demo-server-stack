@@ -1,5 +1,5 @@
 ---
-- name: Setup new monitoring server
+- name: Setup new ansible server
   hosts: monitoring_node
   become: true
 
@@ -40,7 +40,7 @@
         groups: docker
         append: yes
 
-    - name: Create monitoring directories
+    - name: Create ansible directories
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
