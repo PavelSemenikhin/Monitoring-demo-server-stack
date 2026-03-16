@@ -1,0 +1,20 @@
+groups:
+  - name: monitoring-server-rules
+    rules:
+      - alert: NodeExporterHighCPU
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU load on {{ $labels.instance }}"
+          description: "CPU usage has been above 80% for 5 minutes"
+
+      - alert: PrometheusDown
+        expr: up{job="prometheus"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus is unreachable"
+          description: "Prometheus has not responded for 2 minutes"
