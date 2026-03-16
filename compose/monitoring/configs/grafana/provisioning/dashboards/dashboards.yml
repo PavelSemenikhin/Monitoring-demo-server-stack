@@ -1,0 +1,14 @@
+apiVersion: 1
+
+providers:
+  - name: "default"
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: false
+
+    options:
+
+      # Шлях у контейнері Grafana де лежать dashboards
+      # Сюди потрібно змонтувати папку з JSON dashboards
+      path: /var/lib/grafana/dashboards
